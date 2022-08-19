@@ -1,9 +1,10 @@
 package storage
 
 type Storage struct {
-	db Queries
+	db    Queries
+	cache map[int]string
 }
 
-func NewStorage(conn Queries) *Storage {
-	return &Storage{db: conn}
+func NewStorage(db Queries) *Storage {
+	return &Storage{db: db}
 }

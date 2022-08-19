@@ -1,6 +1,8 @@
 package storage
 
 type Order struct {
-	OrderUuid   string `json:"order_uid"`
-	TrackNumber string `json:"track_number"`
+	ID          int    `db:"id"`
+	OrderUuid   string `db:"order_uid"`
+	TrackNumber string `db:"track_number"`
+	Data        []byte `db:"order_data"`
 }
