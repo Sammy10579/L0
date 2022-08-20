@@ -1,11 +1,10 @@
 package main
 
 import (
-	"L0/pkg/storage"
-	"encoding/json"
 	"fmt"
 	"github.com/nats-io/stan.go"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -13,10 +12,6 @@ const (
 	stanClusterID = "test-cluster"
 	clientID      = "order-consumer"
 )
-
-type natsMessage struct {
-	TrackNumber string `json:"track_number"`
-}
 
 func main() {
 	st, err := stan.Connect(
@@ -30,22 +25,17 @@ func main() {
 	}
 	defer st.Close()
 
-	sub, err := st.Subscribe("orders", func(m *stan.Msg) {
-		order := &storage.Order{}
-		err := json.Unmarshal(m.Data, &order)
-		if err != nil {
-			log.Print(err)
+	/*	if _, err = st.Subscribe("orders", func(msg *stan.Msg) {
+			order := &storage.Order{}
+			massage := json.Unmarshal(order.Data, &order)
+		}); err != nil {
 			return
 		}
+		fmt.Printf("Received a message: %s\n", massage)*/
 
-		fmt.Printf("Received a message: %s\n", string(m.Data))
-
-	})
-
-	if err != nil {
-		fmt.Println("Subscribe is not connected")
+	fmt.Println("Server is listening...")
+	if err := http.ListenAndServe((":8080"), nil); err != nil {
+		log.Fatal(err)
 	}
 
-	sub.Unsubscribe()
-	st.Close()
 }

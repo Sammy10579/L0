@@ -1,21 +1,22 @@
-Create table in postgressdb or import.
-
+ # Create table in postgress db.
+```
 CREATE TABLE orders
 (
 id BIGSERIAL PRIMARY KEY,
 num VARCHAR(255) NOT NULL UNIQUE,
 payload JSON NOT NULL
 )
-
-
-1)Run nats-streaming + nuts ui + pgsql:
-
+```
+# Run nats-streaming + nuts ui + pgsql:
+```
 docker-compose up -d
-
-2)Run producer:
-
+```
+# Run producer:
+```
 go run cmd/producer/main.go
-
-3)Run consumer:
-
+```
+# Run consumer:
+```
 go run cmd/consumer/main.go
+```
+

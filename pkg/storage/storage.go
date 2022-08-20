@@ -1,8 +1,10 @@
 package storage
 
+import "sync"
+
 type Storage struct {
 	db    Queries
-	cache map[int]string
+	cache sync.Map
 }
 
 func NewStorage(db Queries) *Storage {
