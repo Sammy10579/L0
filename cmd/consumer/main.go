@@ -25,13 +25,12 @@ func main() {
 	}
 	defer st.Close()
 
-	/*	if _, err = st.Subscribe("orders", func(msg *stan.Msg) {
-			order := &storage.Order{}
-			massage := json.Unmarshal(order.Data, &order)
-		}); err != nil {
-			return
-		}
-		fmt.Printf("Received a message: %s\n", massage)*/
+	if _, err = st.Subscribe("orders", func(m *stan.Msg) {
+		m.Ack()
+		fmt.Printf("Received a message: %s\n", string(m.Data))
+	}); err != nil {
+		return
+	}
 
 	fmt.Println("Server is listening...")
 	if err := http.ListenAndServe((":8080"), nil); err != nil {
