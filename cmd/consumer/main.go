@@ -75,8 +75,22 @@ func main() {
 		return
 	}
 
-	fmt.Println("Server is listening...")
-	if err := http.ListenAndServe((":8080"), nil); err != nil {
+	http.HandleFunc("/orders", func(writer http.ResponseWriter, request *http.Request) {
+		uids := request.URL.Query()["uid"]
+		if len(uids) != 1 || uids[0] == "" {
+			writer.Write([]byte("invalid GET argument uid"))
+			return
+		}
+
+		o, err := service.ByUUID(ctx, uids[0])
+		if err != nil {
+			log.Println(err)
+			writer.Write([]byte("can't get order from storage"))
+			return
+		}
+		writer.Write(o.Data)
+	})
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 
