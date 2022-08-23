@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"github.com/nats-io/stan.go"
 	"log"
 	"os"
@@ -14,6 +15,10 @@ const (
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
+
 	sc, err := stan.Connect(
 		stanClusterID,
 		clientID,

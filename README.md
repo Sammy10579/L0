@@ -3,8 +3,8 @@
 CREATE TABLE orders
 (
 id BIGSERIAL PRIMARY KEY,
-num VARCHAR(255) NOT NULL UNIQUE,
-payload JSON NOT NULL
+orderuuid VARCHAR(255) NOT NULL UNIQUE,
+data JSON NOT NULL
 )
 ```
 # Run nats-streaming + nuts ui + pgsql:
