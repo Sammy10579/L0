@@ -3,12 +3,13 @@ package storage
 import (
 	"context"
 	"fmt"
+	"log"
 	"sync"
 )
 
 type Storage struct {
-	db    Queries
-	cache sync.Map
+	db Queries
+	m  sync.Map
 }
 
 var ord Order
@@ -34,13 +35,23 @@ func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (*Order, error) 
 	return &ord, nil
 }
 
-func (s *Storage) Load(ctx context.Context, order *Order) error {
-	q := `SELECT * FROM orders ORDER BY id`
-	var orders []Order
-	if err := s.db.QueryRow(ctx, q, order.OrderUuid, order.Data).Scan(&order.ID, &order.OrderUuid, &order.Data); err != nil {
-		var order Order
-		orders = append(orders, order)
-		s.cache.Store(order.OrderUuid, order.Data)
+func (s *Storage) Load(ctx context.Context) error {
+	rows, err := s.db.Query(ctx, `SELECT * FROM orders ORDER BY id`)
+	if err != nil {
+		return fmt.Errorf("error load orders from db: %w", err)
 	}
+	defer rows.Close()
+
+	var orders []Order
+	for rows.Next() {
+		var order Order
+		err := rows.Scan(&order.ID, &order.OrderUuid, &order.Data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		orders = append(orders, order)
+		s.m.Store(order.OrderUuid, order.Data)
+	}
+
 	return nil
 }

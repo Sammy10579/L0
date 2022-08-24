@@ -22,7 +22,7 @@ func (s *Service) ByUUID(ctx context.Context, orderuuid string) (*storage.Order,
 }
 
 func (s *Service) Load(ctx context.Context, order *storage.Order) error {
-	return s.st.Load(ctx, order)
+	return s.st.Load(ctx)
 }
 
 //

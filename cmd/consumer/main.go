@@ -42,6 +42,9 @@ func main() {
 	defer conn.Close(ctx)
 
 	store := storage.NewStorage(conn)
+	if err := store.Load(context.Background()); err != nil {
+		log.Println("error load cache from db", err)
+	}
 	service := order.NewService(store)
 
 	st, err := stan.Connect(
