@@ -27,7 +27,7 @@ func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (Order, error) {
 	q := `SELECT id, data FROM orders WHERE orderuuid = $1`
 	var ord Order
 	if err := s.db.QueryRow(ctx, q, orderuuid).Scan(&ord.ID, ord.Data); err != nil {
-		return Order{}, fmt.Errorf("error getting uuid: %w", err)
+		return Order{}, fmt.Errorf("error get uuid: %w", err)
 	}
 	return ord, nil
 }
