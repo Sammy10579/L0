@@ -17,12 +17,12 @@ func (s *Service) Save(ctx context.Context, order *storage.Order) error {
 	return s.st.Create(ctx, order)
 }
 
-func (s *Service) ByUUID(ctx context.Context, orderuuid string) (storage.Order, error) {
+func (s *Service) ByUUID(ctx context.Context, orderuuid string) (*storage.Order, error) {
 	return s.st.ByUUID(ctx, orderuuid)
 }
 
-func (s *Service) LoadCache(ctx context.Context, order *storage.Order) error {
-	return s.st.LoadCache(ctx, order)
+func (s *Service) Load(ctx context.Context, order *storage.Order) error {
+	return s.st.Load(ctx, order)
 }
 
 //

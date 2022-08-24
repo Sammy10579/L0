@@ -11,6 +11,8 @@ type Storage struct {
 	cache sync.Map
 }
 
+var ord Order
+
 func NewStorage(conn Queries) *Storage {
 	return &Storage{db: conn}
 }
@@ -23,16 +25,16 @@ func (s *Storage) Create(ctx context.Context, order *Order) error {
 	return nil
 }
 
-func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (Order, error) {
+func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (*Order, error) {
 	q := `SELECT id, data FROM orders WHERE orderuuid = $1`
 	var ord Order
-	if err := s.db.QueryRow(ctx, q, orderuuid).Scan(&ord.ID, ord.Data); err != nil {
-		return Order{}, fmt.Errorf("error get uuid: %w", err)
+	if err := s.db.QueryRow(ctx, q, orderuuid).Scan(&ord.ID, &ord.Data); err != nil {
+		return nil, fmt.Errorf("error get uuid: %w", err)
 	}
-	return ord, nil
+	return &ord, nil
 }
 
-func (s *Storage) LoadCache(ctx context.Context, order *Order) error {
+func (s *Storage) Load(ctx context.Context, order *Order) error {
 	q := `SELECT * FROM orders ORDER BY id`
 	var orders []Order
 	if err := s.db.QueryRow(ctx, q, order.OrderUuid, order.Data).Scan(&order.ID, &order.OrderUuid, &order.Data); err != nil {
