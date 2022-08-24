@@ -23,10 +23,22 @@ func (s *Storage) Create(ctx context.Context, order *Order) error {
 	return nil
 }
 
-func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (*Order, error) {
+func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (Order, error) {
 	q := `SELECT id, data FROM orders WHERE orderuuid = $1`
-	if err := s.db.QueryRow(ctx, q, orderuuid).Scan(&orderuuid); err != nil {
-		return nil, fmt.Errorf("error getting uuid: %w", err)
+	var ord Order
+	if err := s.db.QueryRow(ctx, q, orderuuid).Scan(&ord.ID, ord.Data); err != nil {
+		return Order{}, fmt.Errorf("error getting uuid: %w", err)
 	}
-	return nil, nil
+	return ord, nil
+}
+
+func (s *Storage) LoadCache(ctx context.Context, order *Order) error {
+	q := `SELECT * FROM orders ORDER BY id`
+	var orders []Order
+	if err := s.db.QueryRow(ctx, q, order.OrderUuid, order.Data).Scan(&order.ID, &order.OrderUuid, &order.Data); err != nil {
+		var order Order
+		orders = append(orders, order)
+		s.cache.Store(order.OrderUuid, order.Data)
+	}
+	return nil
 }
