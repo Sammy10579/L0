@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"sync"
 )
 
 type Storage struct {
 	db Queries
-	m  sync.Map
+	m  map[string][]byte
 }
 
 var ord Order
@@ -28,7 +27,6 @@ func (s *Storage) Create(ctx context.Context, order *Order) error {
 
 func (s *Storage) ByUUID(ctx context.Context, orderuuid string) (*Order, error) {
 	q := `SELECT id, data FROM orders WHERE orderuuid = $1`
-	var ord Order
 	if err := s.db.QueryRow(ctx, q, orderuuid).Scan(&ord.ID, &ord.Data); err != nil {
 		return nil, fmt.Errorf("error get uuid: %w", err)
 	}
@@ -42,16 +40,18 @@ func (s *Storage) Load(ctx context.Context) error {
 	}
 	defer rows.Close()
 
-	var orders []Order
+	s.m = make(map[string][]byte)
 	for rows.Next() {
-		var order Order
-		err := rows.Scan(&order.ID, &order.OrderUuid, &order.Data)
+		err := rows.Scan(&ord.OrderUuid, &ord.Data)
 		if err != nil {
 			log.Fatal(err)
 		}
-		orders = append(orders, order)
-		s.m.Store(order.OrderUuid, order.Data)
+		s.m[ord.OrderUuid] = ord.Data
 	}
 
 	return nil
+}
+
+func (s *Storage) Save(order *Order) {
+	s.m[order.OrderUuid] = order.Data
 }

@@ -66,13 +66,19 @@ func main() {
 			return
 		}
 
-		if err = service.Save(ctx, &storage.Order{
+		if err = service.Create(ctx, &storage.Order{
 			OrderUuid: msg.OrderUuid,
 			Data:      m.Data,
 		}); err != nil {
 			log.Println("massage could not save: " + err.Error())
 			return
 		}
+
+		service.Save(&storage.Order{
+			OrderUuid: msg.OrderUuid,
+			Data:      m.Data,
+		})
+
 		m.Ack()
 	}); err != nil {
 		return
