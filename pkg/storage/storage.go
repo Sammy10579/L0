@@ -55,3 +55,5 @@ func (s *Storage) Load(ctx context.Context) error {
 func (s *Storage) Save(order *Order) {
 	s.m[order.OrderUuid] = order.Data
 }
+
+//
