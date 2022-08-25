@@ -2,9 +2,9 @@
 ```
 CREATE TABLE orders
 (
-id BIGSERIAL PRIMARY KEY,
-orderuuid VARCHAR(255) NOT NULL UNIQUE,
-data JSON NOT NULL
+    id BIGSERIAL PRIMARY KEY,
+    uid VARCHAR(255) NOT NULL UNIQUE,
+    payload JSON NOT NULL
 )
 ```
 # Run nats-streaming + nuts ui + pgsql:
