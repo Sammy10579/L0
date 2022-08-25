@@ -37,7 +37,7 @@ func (s *Service) Save(ctx context.Context, order Order) error {
 	}
 	s.cache.set(order.Uid, order.Payload)
 
-	return s.storage.create(ctx, order)
+	return nil
 }
 
 func (s *Service) PayloadByUid(_ context.Context, uid string) ([]byte, error) {
